@@ -74,6 +74,11 @@ pipeline {
                         sh 'docker push  amuldark/devopswithdeepak-docker-webapp-demo:devopswithdeepak-docker-webapp-demo'
                 }
             }
+            stage("Trivy Image Scan"){
+                steps {
+                        sh 'trivy image --severity HIGH,CRITICAL amuldark/devopswithdeepak-docker-webapp-demo:devopswithdeepak-docker-webapp-demo'
+                }
+            }
             stage('Plan') {
             when {
                 not {
