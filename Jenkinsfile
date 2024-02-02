@@ -55,6 +55,23 @@ pipeline {
                         sh "/usr/bin/mvn package"
                 }
             }
+	    stage('OWASP FS SCAN') {
+            steps {
+                dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+            }
+        }
+	    stage('Docker Scout FS') {
+            steps {
+                script{
+                    withCredentials([string(credentialsId: 'DOCKER_HUB_PASSWORD', variable: 'DOCKER_HUB_PASSWORD')]){
+			sh 'docker login -u amuldark -p $DOCKER_HUB_PASSWORD'
+                        sh 'docker-scout quickview fs://.'
+                        sh 'docker-scout cves fs://.'
+                    }
+                }
+            }
+        }
             stage("Docker build"){
 	        steps {
                     sh 'docker version'
@@ -146,7 +163,7 @@ pipeline {
     always {
         echo 'Slack Notifications'
         slackSend (
-            channel: '#jenkins',   
+            channel: '#anime',   
             color: COLOR_MAP[currentBuild.currentResult],
             message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} \n build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
         )
