@@ -70,14 +70,6 @@ pipeline {
 		
                 }
             }
-	    stage("Docker Image Scan") {    
-                steps {
-	            withCredentials([string(credentialsId: 'DOCKER_HUB_PASSWORD', variable: 'DOCKER_HUB_PASSWORD')]) {   
-                        sh 'docker login -u amuldark -p $DOCKER_HUB_PASSWORD'
-			sh 'docker scout cves amuldark/devopswithdeepak-docker-webapp-demo:devopswithdeepak-docker-webapp-demo'
-	        }
-                }
-            }
             stage("Docker Login") {    
                 steps {
 	            withCredentials([string(credentialsId: 'DOCKER_HUB_PASSWORD', variable: 'DOCKER_HUB_PASSWORD')]) {   
