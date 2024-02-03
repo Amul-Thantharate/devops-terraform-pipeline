@@ -55,17 +55,12 @@ pipeline {
                         sh "/usr/bin/mvn package"
                 }
             }
-	    stage('Docker Scout FS') {
+	  stage('TRIVY FS SCAN') {
             steps {
-                script{
-                    withCredentials([string(credentialsId: 'DOCKER_HUB_PASSWORD', variable: 'DOCKER_HUB_PASSWORD')]){
-			sh 'docker login -u amuldark -p $DOCKER_HUB_PASSWORD'
-                        sh 'docker scout quickview fs://.'
-                        sh 'docker scout cves fs://.'
-                    }
-                }
+                sh "trivy fs . > trivyfs.txt"
             }
         }
+	
             stage("Docker build"){
 	        steps {
                     sh 'docker version'
